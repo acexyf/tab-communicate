@@ -89,7 +89,12 @@
                     let newValue = Cookies.get('music')
                     console.log(newValue, 'cookie')
                     if (newValue) {
-                        let parse = JSON.parse(newValue)
+                        let parse = {}
+                        try {
+                            parse = JSON.parse(newValue)
+                        } catch (error) {
+                            
+                        }
                         console.log(parse, 'parse')
                         let {
                             list,

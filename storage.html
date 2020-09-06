@@ -84,7 +84,12 @@
                     console.log(key, newValue)
                     if (key === 'music' && newValue) {
 
-                        let parse = JSON.parse(newValue)
+                        let parse = {}
+                        try {
+                            parse = JSON.parse(newValue)
+                        } catch (error) {
+                            
+                        }
                         console.log(parse, 'parse')
                         let {
                             list,
