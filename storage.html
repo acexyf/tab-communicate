@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage</title>
+</head>
+<style>
+    .box {
+        border: 1px solid #d9d9d9;
+
+    }
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+        cursor: pointer;
+        padding: 10px 0;
+    }
+
+    .item.active {
+        background: #f7f7f7;
+    }
+
+    .item>div {
+        width: 200px;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <div class="box">
+            <template v-for="(item, index) in list">
+                <div :class="['item',activeIndex == index ? 'active':'']" @click="clickMusic(item, index)" :key="index">
+                    <div class="name">{{item.name}}</div>
+                    <div class="time">{{item.time}}</div>
+                    <div class="singer">{{item.singer}}</div>
+                    <div class="album">{{item.album}}</div>
+                </div>
+            </template>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qs@6.9.4/dist/qs.min.js"></script>
+    <script>
+
+
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    list: [],
+                    activeIndex: -1,
+                }
+            },
+            mounted() {
+
+                const {
+                    id = '1'
+                } = Qs.parse(window.location.search, { ignoreQueryPrefix: true })
+
+                axios({
+                    url: '/api/list',
+                    params: {
+                        id,
+                    }
+                }).then((res) => {
+                    return res.data
+                }).then((res) => {
+                    console.log(res)
+                    const {
+                        list
+                    } = res
+                    this.list = list
+                })
+
+                window.addEventListener('storage', (ev) => {
+                    const {
+                        key,
+                        newValue,
+                    } = ev
+                    console.log(key, newValue)
+                    if (key === 'music' && newValue) {
+
+                        let parse = JSON.parse(newValue)
+                        console.log(parse, 'parse')
+                        let {
+                            list,
+                        } = this
+                        this.activeIndex = -1
+                        list.map((item, index) => {
+                            if (item.name == parse.name) {
+                                this.activeIndex = index
+                            }
+                        })
+
+                    }
+
+                })
+
+            },
+            methods: {
+                clickMusic(item, index) {
+                    console.log(item, 'item')
+                    this.activeIndex = index
+
+                    localStorage.setItem('music', JSON.stringify(item))
+                }
+            }
+
+        })
+
+    </script>
+</body>
+
+</html>

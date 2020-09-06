@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .box {
+        border: 1px solid #d9d9d9;
+
+    }
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+        cursor: pointer;
+        padding: 10px 0;
+    }
+
+    .item.active {
+        background: #f7f7f7;
+    }
+
+    .item>div {
+        width: 200px;
+    }
+</style>
+
+<body>
+
+    <div id="app">
+        <div class="box">
+            <template v-for="(item, index) in list">
+                <div :class="['item',activeIndex == index ? 'active':'']" @click="clickMusic(item, index)" :key="index">
+                    <div class="name">{{item.name}}</div>
+                    <div class="time">{{item.time}}</div>
+                    <div class="singer">{{item.singer}}</div>
+                    <div class="album">{{item.album}}</div>
+                </div>
+            </template>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qs@6.9.4/dist/qs.min.js"></script>
+    <script>
+
+
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    list: [],
+                    activeIndex: -1,
+                    page_id: '0',
+
+                }
+            },
+            mounted() {
+
+                let timestamp = new Date().getTime()
+                this.page_id = timestamp + ''
+
+                const {
+                    id = '1'
+                } = Qs.parse(window.location.search, { ignoreQueryPrefix: true })
+
+                axios({
+                    url: '/api/list',
+                    params: {
+                        id,
+                    }
+                }).then((res) => {
+                    return res.data
+                }).then((res) => {
+                    console.log(res)
+                    const {
+                        list
+                    } = res
+                    this.list = list
+                })
+
+                // window.addEventListener('storage', (ev) => {
+                // })
+                setInterval(() => {
+                    let newValue = Cookies.get('music')
+                    console.log(newValue, 'cookie')
+                    if (newValue) {
+                        let parse = JSON.parse(newValue)
+                        console.log(parse, 'parse')
+                        let {
+                            list,
+                            page_id
+                        } = this
+                        this.activeIndex = -1
+                        list.map((item, index) => {
+                            if (item.name == parse.name && parse.page_id == page_id) {
+                                this.activeIndex = index
+                            }
+                        })
+
+                    }
+                }, 1000)
+            },
+            methods: {
+                clickMusic(item, index) {
+                    console.log(item, 'item')
+                    this.activeIndex = index
+
+                    let {
+                        page_id
+                    } = this
+                    item = Object.assign({
+                        page_id,
+                    }, item)
+
+                    // localStorage.setItem('music', JSON.stringify(item))
+                    Cookies.set('music', JSON.stringify(item))
+                }
+            }
+
+        })
+
+    </script>
+</body>
+
+</html>
