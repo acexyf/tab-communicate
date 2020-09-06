@@ -3,15 +3,22 @@ const path = require('path')
 const port = 9010
 const app = express()
 
+app.use('/public',express.static('public'))
+
 app.get('/storage', (req, res) => {
     res.sendFile(path.resolve(__dirname, './storage.html'))
 })
 app.get('/storage1', (req, res) => {
     res.sendFile(path.resolve(__dirname, './storage1.html'))
 })
-app.get('/cookie',(req, res)=>{
+app.get('/cookie', (req, res) => {
     res.sendFile(path.resolve(__dirname, './cookie.html'))
 })
+
+app.get('/worker', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './worker.html'))
+})
+
 
 app.get('/api/list', (req, res) => {
     let {

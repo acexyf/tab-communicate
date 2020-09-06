@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button id="btn">点击</button>
+    <script>
+        
+
+        var sw = new SharedWorker('/public/shared.js');
+
+
+        document.querySelector('#btn').addEventListener('click',function(){
+
+            
+            sw.port.onmessage = function(ev){
+                console.log(ev.data)
+            }
+            sw.port.start()
+            sw.port.postMessage('click')
+
+
+        })
+
+    </script>
+</body>
+
+</html>
