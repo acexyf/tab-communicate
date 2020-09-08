@@ -2,8 +2,9 @@ const express = require('express')
 const path = require('path')
 const port = 9010
 const app = express()
+const expressWs = require('express-ws')(app)
 
-app.use('/public',express.static('public'))
+app.use('/public', express.static('public'))
 
 app.get('/storage', (req, res) => {
     res.sendFile(path.resolve(__dirname, './storage.html'))
@@ -18,7 +19,68 @@ app.get('/cookie', (req, res) => {
 app.get('/worker', (req, res) => {
     res.sendFile(path.resolve(__dirname, './worker.html'))
 })
+app.get('/websocket', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './websockte.html'))
+})
 
+
+let clients = []
+
+app.get('/api/get_user_id', function (req, res) {
+    res.json({
+        user_id: clients.length + ''
+    })
+})
+
+let musicNum = null
+
+app.ws('/ws/:user_id', function (ws, req) {
+
+    let {
+        user_id,
+    } = req.params
+
+    clients.push({
+        user_id,
+        ws
+    })
+
+    ws.send('连接成功')
+
+    ws.on('message', function (msg) {
+        // console.log('收到消息:', msg, user_id)
+        // ws.send('from server msg')
+
+        console.log(msg, 'msg')
+        let parsed = {}
+        try {
+            parsed = JSON.parse(msg)
+        } catch (error) {
+
+        }
+        musicNum = parsed
+
+        for (let i = 0; i < clients.length; i++) {
+            let item = clients[i]
+            if (item.user_id === user_id && item !== this) {
+                item.ws.send(msg)
+            }
+        }
+
+    })
+
+    ws.on('close', function () {
+        console.log('close')
+
+        for (let i = 0; i < clients.length; i++) {
+            if (clients[i].ws === this) {
+                clients.splice(i, 1)
+            }
+        }
+
+        // ws.send('bye')
+    })
+})
 
 app.get('/api/list', (req, res) => {
     let {
