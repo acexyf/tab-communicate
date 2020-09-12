@@ -1,0 +1,50 @@
+.box {
+  border: 1px solid #d9d9d9;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 10px 0;
+  color: #333;
+}
+
+.header.item {
+  background: url(/public/table-header.png) repeat-x;
+  padding: 0;
+  height: 40px;
+}
+
+.header.item>div {
+  line-height: 36px;
+}
+
+.item.active {
+  background: #f7f7f7;
+}
+
+.item>div {
+  width: 200px;
+  text-align: center;
+}
+
+.item .index {
+  width: 30px;
+  position: relative;
+}
+.item.music .index::after{
+  content: '';
+  display: block;
+  width: 17px;
+  height: 17px;
+  background: url(/public/play-btn.png) no-repeat;
+  position: absolute;
+  right: -30px;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+.item.music.active .index::after{
+  background: url(/public/play-btn.png) no-repeat;
+  background-position: -17px 0;
+}

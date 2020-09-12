@@ -4,44 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Cookie</title>
+    <link rel="stylesheet" href="/public/style.css">
 </head>
-<style>
-    .box {
-        border: 1px solid #d9d9d9;
-
-    }
-
-    .item {
-        display: flex;
-        justify-content: space-between;
-        cursor: pointer;
-        padding: 10px 0;
-    }
-
-    .item.active {
-        background: #f7f7f7;
-    }
-
-    .item>div {
-        width: 200px;
-    }
-</style>
 
 <body>
 
-    <div id="app">
-        <div class="box">
-            <template v-for="(item, index) in list">
-                <div :class="['item',activeIndex == index ? 'active':'']" @click="clickMusic(item, index)" :key="index">
-                    <div class="name">{{item.name}}</div>
-                    <div class="time">{{item.time}}</div>
-                    <div class="singer">{{item.singer}}</div>
-                    <div class="album">{{item.album}}</div>
-                </div>
-            </template>
+  <div id="app">
+    <div class="box">
+      <div class="item header">
+        <div class="index"></div>
+        <div class="name">歌曲标题</div>
+        <div class="time">时长</div>
+        <div class="singer">歌手</div>
+        <div class="album">专辑</div>
+      </div>
+      <template v-for="(item, index) in list">
+        <div :class="['item','music',activeIndex == index ? 'active':'']" @click="clickMusic(item, index)" :key="index">
+          <div class="index">{{index+1}}</div>
+          <div class="name">{{item.name}}</div>
+          <div class="time">{{item.time}}</div>
+          <div class="singer">{{item.singer}}</div>
+          <div class="album">{{item.album}}</div>
         </div>
+      </template>
     </div>
+  </div>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios"></script>
