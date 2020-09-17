@@ -2,122 +2,123 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Storage</title>
-  <link rel="stylesheet" href="/public/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage</title>
+    <link rel="stylesheet" href="/public/style.css">
 </head>
 
 <body>
-  <div id="app">
-    <div class="box">
-      <div class="item header">
-        <div class="index"></div>
-        <div class="name">歌曲标题</div>
-        <div class="time">时长</div>
-        <div class="singer">歌手</div>
-        <div class="album">专辑</div>
-      </div>
-      <template v-for="(item, index) in list">
-        <div :class="['item','music',activeIndex == index ? 'active':'']" @click="clickMusic(item, index)" :key="index">
-          <div class="index">{{index+1}}</div>
-          <div class="name">{{item.name}}</div>
-          <div class="time">{{item.time}}</div>
-          <div class="singer">{{item.singer}}</div>
-          <div class="album">{{item.album}}</div>
+    <div id="app">
+        <div class="box">
+            <div class="item header">
+                <div class="index"></div>
+                <div class="name">歌曲标题</div>
+                <div class="time">时长</div>
+                <div class="singer">歌手</div>
+                <div class="album">专辑</div>
+            </div>
+            <template v-for="(item, index) in list">
+                <div :class="['item','music',activeIndex == index ? 'active':'']" @click="clickMusic(item, index)"
+                    :key="index">
+                    <div class="index">{{index+1}}</div>
+                    <div class="name">{{item.name}}</div>
+                    <div class="time">{{item.time}}</div>
+                    <div class="singer">{{item.singer}}</div>
+                    <div class="album">{{item.album}}</div>
+                </div>
+            </template>
         </div>
-      </template>
     </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qs@6.9.4/dist/qs.min.js"></script>
-  <script>
-    new Vue({
-      el: '#app',
-      data() {
-        return {
-          list: [],
-          activeIndex: -1,
-          page_id: '0',
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qs@6.9.4/dist/qs.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    list: [],
+                    activeIndex: -1,
+                    page_id: '0',
 
-        }
-      },
-      mounted() {
+                }
+            },
+            mounted() {
 
-        let timestamp = new Date().getTime()
-        this.page_id = timestamp + ''
+                let timestamp = new Date().getTime()
+                this.page_id = timestamp + ''
 
-        const {
-          id = '1'
-        } = Qs.parse(window.location.search, {
-          ignoreQueryPrefix: true
-        })
+                const {
+                    id = '1'
+                } = Qs.parse(window.location.search, {
+                    ignoreQueryPrefix: true
+                })
 
-        axios({
-          url: '/api/list',
-          params: {
-            id,
-          }
-        }).then((res) => {
-          return res.data
-        }).then((res) => {
-          console.log(res)
-          const {
-            list
-          } = res
-          this.list = list
-        })
+                axios({
+                    url: '/api/list',
+                    params: {
+                        id,
+                    }
+                }).then((res) => {
+                    return res.data
+                }).then((res) => {
+                    console.log(res)
+                    const {
+                        list
+                    } = res
+                    this.list = list
+                })
 
-        window.addEventListener('storage', (ev) => {
-          const {
-            key,
-            newValue,
-          } = ev
-          console.log(key, newValue)
-          if (key === 'music' && newValue) {
+                window.addEventListener('storage', (ev) => {
+                    const {
+                        key,
+                        newValue,
+                    } = ev
+                    console.log(key, newValue)
+                    if (key === 'music' && newValue) {
 
-            let parse = {}
-            try {
-              parse = JSON.parse(newValue)
-            } catch (error) {
+                        let parse = {}
+                        try {
+                            parse = JSON.parse(newValue)
+                        } catch (error) {
 
+                        }
+                        let {
+                            list,
+                            page_id
+                        } = this
+                        let activeIndex = -1
+                        list.map((item, index) => {
+                            if (item.name == parse.name && parse.page_id == page_id) {
+                                activeIndex = index
+                            }
+                        })
+                        this.activeIndex = activeIndex
+
+                    }
+
+                })
+
+            },
+            methods: {
+                clickMusic(item, index) {
+                    console.log(item, 'item')
+                    this.activeIndex = index
+
+                    let {
+                        page_id
+                    } = this
+                    item = Object.assign({
+                        page_id,
+                    }, item)
+
+                    localStorage.setItem('music', JSON.stringify(item))
+                }
             }
-            let {
-              list,
-              page_id
-            } = this
-            let activeIndex = -1
-            list.map((item, index) => {
-              if (item.name == parse.name && parse.page_id == page_id) {
-                activeIndex = index
-              }
-            })
-            this.activeIndex = activeIndex
-
-          }
 
         })
-
-      },
-      methods: {
-        clickMusic(item, index) {
-          console.log(item, 'item')
-          this.activeIndex = index
-
-          let {
-            page_id
-          } = this
-          item = Object.assign({
-            page_id,
-          }, item)
-
-          localStorage.setItem('music', JSON.stringify(item))
-        }
-      }
-
-    })
-  </script>
+    </script>
 </body>
 
 </html>
