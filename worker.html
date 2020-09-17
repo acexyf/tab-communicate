@@ -99,12 +99,12 @@
 
         }
         this.sw.port.start()
-        setInterval(() => {
-          this.sw.port.postMessage({
-            type: 'get',
-            data: null
-          })
-        }, 1000)
+        // setInterval(() => {
+        //   this.sw.port.postMessage({
+        //     type: 'get',
+        //     data: null
+        //   })
+        // }, 1000)
       },
       methods: {
         clickMusic(item, index) {
@@ -118,9 +118,6 @@
             page_id,
           }, item)
 
-          // localStorage.setItem('music', JSON.stringify(item))
-
-
           this.sw.port.postMessage({
             type: 'set',
             data: item
@@ -131,16 +128,6 @@
     })
   </script>
 
-  <script>
-    // var sw = new SharedWorker('/public/shared.js');
-    // document.querySelector('#btn').addEventListener('click',function(){
-    //     sw.port.onmessage = function(ev){
-    //         console.log(ev.data)
-    //     }
-    //     sw.port.start()
-    //     sw.port.postMessage('click')
-    // })
-  </script>
 </body>
 
 </html>
