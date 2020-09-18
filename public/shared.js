@@ -1,37 +1,44 @@
 let musicNum = null;
 
-const connectedClients = [];
+const connectedClients = new Set()
 
-onconnect = function (e) {
-  var port = e.source;
-  //   port.start();
-  console.log("onconnect");
-  connectedClients.push({
-    port,
+let id = 1
+
+function sendMessageToClients(payload, currentClientId = null) {
+  connectedClients.forEach(({ id, client }) => {
+    if (currentClientId && currentClientId == id) return;
+    client.postMessage(payload);
   });
+}
 
-  port.onmessage = (e) => {
-    let { type, data } = e.data;
+function setupClient(clientPort) {
+  clientPort.onmessage = (event) => {
+    const { type, data, id } = event.data;
+    if(type=='set'){
+        musicNum = data
 
-    if (type == "get") {
-      port.postMessage({
-        type: "get",
-        data: musicNum,
-      });
-    } else if (type == "set") {
-      musicNum = data;
-      console.log(connectedClients, connectedClients.length);
-      connectedClients.forEach((elem) => {
-        console.log(elem.port !== port);
-        if (elem.port !== port) {
-          elem.port.postMessage({
-            type: "get",
-            data: musicNum,
-          });
-        }
-      });
-    } else if (type == "close") {
-      self.close();
+
+        sendMessageToClients({
+            type: 'get',
+            data: data,
+        }, id)
+
     }
   };
-};
+}
+
+self.addEventListener("connect", (event) => {
+  const newClient = event.source;
+  connectedClients.add({
+    client: newClient,
+    id: id,
+  });
+  setupClient(newClient);
+
+  newClient.postMessage({
+    type: 'id',
+    data: id
+  })
+
+  id++
+});
