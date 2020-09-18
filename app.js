@@ -24,13 +24,11 @@ app.get("/worker", (req, res) => {
 app.get("/websocket", (req, res) => {
   res.sendFile(path.resolve(__dirname, "./websocket.html"));
 });
-app.get("/postMessage", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "./postMessage.html"));
-});
 
 let clients = [];
 
 app.get("/api/get_user_id", function (req, res) {
+  //简单用数组长度作为用户id
   res.json({
     user_id: clients.length + "",
   });

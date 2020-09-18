@@ -50,7 +50,7 @@
 
         let timestamp = new Date().getTime()
         this.page_id = timestamp + ''
-        this.sw = new SharedWorker('/public/shared.js');
+        this.sw = new SharedWorker('/public/shared.js', { name: 'musicWorker' });
         const {
           id = '1'
         } = Qs.parse(window.location.search, {
