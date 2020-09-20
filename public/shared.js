@@ -1,11 +1,12 @@
-let musicNum = null;
-
 const connectedClients = new Set()
 
 let id = 1
 
 function sendMessageToClients(payload, currentClientId = null) {
-  connectedClients.forEach(({ id, client }) => {
+  connectedClients.forEach(({
+    id,
+    client
+  }) => {
     if (currentClientId && currentClientId == id) return;
     client.postMessage(payload);
   });
@@ -13,16 +14,16 @@ function sendMessageToClients(payload, currentClientId = null) {
 
 function setupClient(clientPort) {
   clientPort.onmessage = (event) => {
-    const { type, data, id } = event.data;
-    if(type=='set'){
-        musicNum = data
-
-
-        sendMessageToClients({
-            type: 'get',
-            data: data,
-        }, id)
-
+    const {
+      type,
+      data,
+      id
+    } = event.data;
+    if (type == 'set') {
+      sendMessageToClients({
+        type: 'get',
+        data: data,
+      }, id)
     }
   };
 }
